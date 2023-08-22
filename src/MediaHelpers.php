@@ -79,13 +79,14 @@ class MediaHelpers
             return Storage::disk($this->storageDisk)->url($this->findDefaultsFolderPath().'/placeholder.png');
         }
     }
-    public function upload($request, $file_name, string $upload_dir)
+    public function upload($request, $fieldName, string $upload_dir)
     {
         try {
-            if ($request->hasFile($file_name)) {
-                $file = $request->$file_name;
+            if ($request->hasFile($fieldName)) {
+                $file = $request->$fieldName;
                 $extension = $file->extension();
-                $filename = time().'.'.$extension;
+                $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $filename = substr(Str::slug($name), 0, 150).'-'.time().'.'.$extension;
                 $fileTypeFolder = $this->getFileTypeFolder($extension);
                 $up_path = $fileTypeFolder.'/'.$upload_dir.'/'.date('Y-m');
                 $filePath = $up_path.'/'.$filename;

@@ -14,7 +14,7 @@ Store Image/File
 
 ```
     use AnisAronno\Media\Facades\Media;
-    Media::upload($request, $file_name, string $upload_dir)
+    Media::upload($request, $fieldName, string $upload_dir)
 ```
 
 Get Image/File

@@ -24,7 +24,7 @@ Get Image/File
     Media::getUrl($path)
 ```
 
-Get Image/File with set storage disk
+Get Image/File with storage disk
 
 ```
     use AnisAronno\Media\Facades\Media;

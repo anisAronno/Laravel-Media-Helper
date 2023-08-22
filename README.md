@@ -58,13 +58,13 @@ Get Default Image/File
     use AnisAronno\Media\Facades\Media;
     Media::getgetDefaultFilesURL();
 ```
-
+Get by associative array
 ```
-Media::getgetDefaultFilesURL(true); // get associative array
+    Media::getgetDefaultFilesURL(true);
 ```
-
+Get by specific value
 ```
-    Media::getgetDefaultFilesURL(true, 'placeholder'); // get specific value
+     Media::getgetDefaultFilesURL(true, 'placeholder');
 ```
 
 ## Contribution Guide

@@ -1,0 +1,52 @@
+{
+    "name": "anisaronno/media",
+    "description": "Laravel Media Helper",
+    "version": "0.0.1",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "AnisAronno\\Media\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MD. Anichur Rahaman",
+            "email": "contact@anichur.com",
+            "homepage": "https://anichur.com",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "Media",
+        "Gallery",
+        "File",
+        "Laravel",
+        "wedevs"
+    ],
+    "homepage": "https://github.com/anisAronno/media",
+    "require": {
+        "php": "^8.0",
+        "illuminate/database": "^8.12|^9.0|^10.0",
+        "laravel/framework": "^8.37|^9.0|^10.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AnisAronno\\Media\\MediaServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "format": "php-cs-fixer fix --allow-risky=yes",
+        "analyse": "phpstan analyse"
+    }
+}

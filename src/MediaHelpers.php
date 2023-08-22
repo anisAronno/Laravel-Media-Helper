@@ -46,14 +46,20 @@ class MediaHelpers
 
         return $this;
     }
-    public function getDefaultFiles($assoc = false)
+    public function getDefaultFiles($assoc = false, $key = null)
     {
         $defaultFiles = $this->defaultFiles();
 
         if($assoc == false) {
             return $defaultFiles;
         } else {
-            return $this->mappingDefaultFiles($defaultFiles);
+            $defaultFilesArr = $this->mappingDefaultFiles($defaultFiles);
+
+            if(is_null($key)) {
+                return $defaultFilesArr;
+            } else {
+                return is_array($defaultFilesArr) && array_key_exists($key, $defaultFilesArr) ? $defaultFilesArr[$key] : [];
+            }
         }
     }
 

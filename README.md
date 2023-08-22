@@ -1,4 +1,4 @@
-## Laravel Media helper
+## Laravel Media Helper
 
 # Getting started
 
@@ -17,18 +17,25 @@ Store Image/File
     Media::upload($request, $fieldName, string $upload_dir)
 ```
 
+Store Image/File with storage disk
+
+```
+    use AnisAronno\Media\Facades\Media;
+    Media::setStorageDisk('public')->upload($request, $fieldName, string $upload_dir)
+```
+
 Get Image/File
 
 ```
     use AnisAronno\Media\Facades\Media;
-    Media::getUrl($path)
+    Media::getURL($path)
 ```
 
 Get Image/File with storage disk
 
 ```
     use AnisAronno\Media\Facades\Media;
-    Media::setStorageDisk('public')->url($path)->get();
+    Media::setStorageDisk('public')->getURL($path);
 ```
 
 Delete Image/File
@@ -36,6 +43,28 @@ Delete Image/File
 ```
     use AnisAronno\Media\Facades\Media;
     Media::delete($path)
+```
+
+Delete Image/File with storage disk
+
+```
+    use AnisAronno\Media\Facades\Media;
+    Media::setStorageDisk('public')->delete($path)
+```
+
+Get Default Image/File
+
+```
+    use AnisAronno\Media\Facades\Media;
+    Media::getgetDefaultFilesURL();
+```
+
+```
+Media::getgetDefaultFilesURL(true); // get associative array
+```
+
+```
+    Media::getgetDefaultFilesURL(true, 'placeholder'); // get specific value
 ```
 
 ## Contribution Guide

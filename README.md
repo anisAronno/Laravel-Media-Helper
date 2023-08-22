@@ -58,7 +58,7 @@ Get Default Image/File
     use AnisAronno\Media\Facades\Media;
     Media::getgetDefaultFilesURL();
 ```
-Get by associative array
+Get as a associative array
 ```
     Media::getgetDefaultFilesURL(true);
 ```

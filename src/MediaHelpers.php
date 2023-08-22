@@ -1,6 +1,6 @@
 <?php
 
-namespace AnisAronno\Media;
+namespace AnisAronno\MediaHelper;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

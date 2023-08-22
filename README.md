@@ -7,7 +7,7 @@
 Install package with composer command
 
 ```
-composer require anisaronno/media
+composer require anisaronno/laravel-media-helper
 ```
 
 Store Image/File

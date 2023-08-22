@@ -1,10 +1,10 @@
 <?php
 
-namespace AnisAronno\Media;
+namespace AnisAronno\MediaHelper;
 
 use Illuminate\Support\ServiceProvider;
 
-class MediaServiceProvider extends ServiceProvider
+class MediaHelperServiceProvider extends ServiceProvider
 {
     /**
      * Register services.

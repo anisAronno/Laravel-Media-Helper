@@ -7,13 +7,11 @@ use Illuminate\Support\Str;
 
 class MediaHelpers
 {
-    private $fileTypeFolders;
+    private $fileTypeFolders = [];
     private $storageDisk;
     private $storageURL;
-
-    private static $instance;
-
     private $result;
+    private static $instance;
 
     private function __construct($fileTypeArray = [])
     {
@@ -29,9 +27,8 @@ class MediaHelpers
         ];
 
         $this->fileTypeFolders = array_merge($defaultFileTypeFolders, $fileTypeArray);
-        $this->storageDisk =  Storage::getDefaultDriver();
+        $this->storageDisk = Storage::getDefaultDriver();
         $this->storageURL = $this->storageDisk == 'local' ? 'public/' : '';
-
     }
 
     public static function getInstance($fileTypeFolders = [])
@@ -50,9 +47,9 @@ class MediaHelpers
         return $this;
     }
 
-    public function url($value)
+    public function url($fullPath)
     {
-        $this->result = $this->getUrl($value);
+        $this->result = $this->getUrl($fullPath);
         return $this;
     }
 
@@ -61,112 +58,147 @@ class MediaHelpers
         return $this->result;
     }
 
-    public function getUrl($value): string
+    public function getDefaultFiles()
     {
-        if (!empty($value)) {
-            $fileExtension = pathinfo(parse_url($value, PHP_URL_PATH), PATHINFO_EXTENSION);
-            $fileTypeFolder = $this->getFileTypeFolder($fileExtension);
-            $path = stristr($value, $fileTypeFolder);
+        return $this->defaultFiles();
+    }
+    public function getUrl($fullPath): string
+    {
+        if (!empty($fullPath)) {
+            $path = $this->getPathFromValue($fullPath);
 
-            if ($this->isDefaultFile($value) && Storage::disk($this->storageDisk)->exists($this->fullPath($value))) {
-                return Storage::url($value);
-            } elseif (!empty($path) && Storage::disk($this->storageDisk)->exists($this->fullPath($path))) {
+            if ($this->isDefaultFile($fullPath) && $this->existsInStorage($fullPath)) {
+                return Storage::url($fullPath);
+            } elseif ($path && $this->existsInStorage($path)) {
                 return Storage::url($path);
             } else {
-                return $value;
+                return $fullPath;
             }
         } else {
-            return Storage::disk($this->storageDisk)->url($this->findDefaultsFolderPath().'/placeholder.png');
+            return Storage::disk($this->storageDisk)->url($this->getDefaultPlaceholder());
         }
     }
-    public function upload($request, $fieldName, string $upload_dir)
+
+    public function upload($request, $fieldName, string $uploadDir = 'common')
     {
         try {
             if ($request->hasFile($fieldName)) {
                 $file = $request->$fieldName;
                 $extension = $file->extension();
-                $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $filename = substr(Str::slug($name), 0, 150).'-'.time().'.'.$extension;
-                $fileTypeFolder = $this->getFileTypeFolder($extension);
-                $up_path = $fileTypeFolder.'/'.$upload_dir.'/'.date('Y-m');
-                $filePath = $up_path.'/'.$filename;
+                $filename = $this->generateUniqueFileName($file);
+                $path = $this->getFilePath($filename, $uploadDir, $extension);
 
-                if (!$this->isAllowFileType($filePath)) {
+                if (!$this->isAllowedFileType($path)) {
                     return false;
                 }
 
-                return $this->store($file, $filePath);
+                return $this->storeFile($file, $path);
             } else {
                 return false;
             }
         } catch (\Throwable $th) {
-            return false;
+            return $th->getMessage();
         }
     }
 
-    private function store($file, $file_path)
+    public function delete($fullPath): bool|string
     {
-        $storageDisk = Storage::disk($this->storageDisk);
-        $storageDisk->put('public/'.$this->fullPath($file_path), file_get_contents($file));
+        $path = $this->getPathFromValue($fullPath);
 
-        return $file_path;
-    }
-
-    private function fullPath($value): string
-    {
-        return  $this->storageURL.$value;
-    }
-
-    public function delete($value): bool
-    {
-        $path = stristr($value, 'images');
-
-        if (!$this->isAllowFileType($path) || $this->isDefaultFile($path)) {
+        if (!$path || !$this->isAllowedFileType($path) || $this->isDefaultFile($path)) {
             return false;
         }
 
         try {
-            if (Storage::disk($this->storageDisk)->exists($this->fullPath($path))) {
-                Storage::disk($this->storageDisk)->delete($this->fullPath($path));
-                return true;
+            if ($this->existsInStorage($path)) {
+                return Storage::disk($this->storageDisk)->delete($this->fullPath($path));
             }
 
             return false;
         } catch (\Throwable $th) {
-            return false;
+            return $th->getMessage();
         }
     }
 
-    public function isAllowFileType($path = ''): bool
+    private function getPathFromValue($value)
     {
-        $extension = pathinfo(
-            parse_url($path, PHP_URL_PATH),
-            PATHINFO_EXTENSION
-        );
+        $fileExtension = pathinfo(parse_url($value, PHP_URL_PATH), PATHINFO_EXTENSION);
+        $fileTypeFolder = $this->getFileTypeFolder($fileExtension);
 
+        return stristr($value, $fileTypeFolder);
+    }
+
+    private function existsInStorage($path)
+    {
+        return Storage::disk($this->storageDisk)->exists($this->fullPath($path));
+    }
+
+    private function generateUniqueFileName($file)
+    {
+        $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $slug = Str::slug($name);
+        $extension = $file->extension();
+
+        return substr($slug, 0, 150) . '-' . time() . '.' . $extension;
+    }
+
+    private function getFilePath($filename, $uploadDir, $extension)
+    {
+        $fileTypeFolder = $this->getFileTypeFolder($extension);
+        return "{$fileTypeFolder}/{$uploadDir}/" . date('Y-m') . "/{$filename}";
+    }
+
+    private function isAllowedFileType($path = ''): bool
+    {
+        $extension = pathinfo(parse_url($path, PHP_URL_PATH), PATHINFO_EXTENSION);
         $allowedExtensions = array_merge(...array_values($this->fileTypeFolders));
 
         return in_array($extension, $allowedExtensions);
     }
 
+    private function getDefaultPlaceholder()
+    {
+        $defaultFolderPath = $this->findDefaultsFolderPath();
+        return $defaultFolderPath ? "{$defaultFolderPath}/placeholder.png" : '';
+    }
 
     private function isDefaultFile($path): bool
     {
-        $disk = Storage::disk($this->storageDisk);
+        $defaultFiles = $this->defaultFiles();
+
+        if (empty($defaultFiles)) {
+            return false;
+        }
+
         $defaultFolderPath = $this->findDefaultsFolderPath();
 
-        $defaultFiles = $disk->files($defaultFolderPath);
         $trimPath = stristr($path, $defaultFolderPath);
 
         return in_array($trimPath, $defaultFiles);
     }
 
-    private function findDefaultsFolderPath(): ?string
+    private function defaultFiles()
     {
-        $directories = Storage::disk('public')->allDirectories();
-        $defaultsFolder = array_filter($directories, fn ($directory) => Str::contains($directory, 'defaults'));
+        $defaultFolderPath = $this->findDefaultsFolderPath();
+        return $defaultFolderPath ? Storage::disk($this->storageDisk)->files($defaultFolderPath) : [];
+    }
 
-        return count($defaultsFolder) > 0 ? reset($defaultsFolder) : null;
+    private function findDefaultsFolderPath($defaultFolderName = 'defaults'): ?string
+    {
+        $directories = Storage::disk($this->storageDisk)->allDirectories();
+        $defaultsFolder = array_filter($directories, fn ($directory) => Str::contains($directory, $defaultFolderName));
+
+        if (count($defaultsFolder) > 0) {
+            return reset($defaultsFolder);
+        } else {
+            if (!Storage::exists($defaultFolderName)) {
+                Storage::makeDirectory($defaultFolderName);
+                $imageUrl = __DIR__ . '/assets/images/placeholder.png';
+                $this->storeFile($imageUrl, "{$defaultFolderName}/placeholder.png");
+            } else {
+                return null;
+            }
+        }
     }
 
     private function getFileTypeFolder($extension)
@@ -178,5 +210,18 @@ class MediaHelpers
         }
 
         return 'others';
+    }
+
+    private function storeFile($file, $file_path)
+    {
+        $storageDisk = Storage::disk($this->storageDisk);
+        $storageDisk->put('public/' . $this->fullPath($file_path), file_get_contents($file));
+
+        return $file_path;
+    }
+
+    private function fullPath($value): string
+    {
+        return  $this->storageURL . $value;
     }
 }

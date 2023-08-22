@@ -114,7 +114,7 @@ class MediaHelpers
         return  $this->storageURL.$value;
     }
 
-    public function deleteFile($value): bool
+    public function delete($value): bool
     {
         $path = stristr($value, 'images');
 

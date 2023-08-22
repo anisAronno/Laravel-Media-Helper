@@ -12,7 +12,7 @@ class Media extends Facade
      * @method static string \AnisAronno\Media\MediaHelpers get()
      * @method static string \AnisAronno\Media\MediaHelpers getUrl(string $path)
      * @method static void \AnisAronno\Media\MediaHelpers upload($request, $file_name, string $upload_dir)
-     * @method static void \AnisAronno\Media\MediaHelpers public function deleteFile($value)
+     * @method static void \AnisAronno\Media\MediaHelpers public function delete($value)
      *
      * @see \AnisAronno\Media\MediaHelpers
      */

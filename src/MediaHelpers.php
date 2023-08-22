@@ -30,6 +30,8 @@ class MediaHelpers
 
         $this->fileTypeFolders = array_merge($defaultFileTypeFolders, $fileTypeArray);
         $this->storageDisk =  Storage::getDefaultDriver();
+        $this->storageURL = $this->storageDisk == 'local' ? 'public/' : '';
+
     }
 
     public static function getInstance($fileTypeFolders = [])

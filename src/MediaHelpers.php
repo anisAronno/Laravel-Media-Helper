@@ -63,6 +63,13 @@ class MediaHelpers
         }
     }
 
+
+    public function getPlaceholderImage()
+    {
+        $res = $this->getDefaultFiles(true);
+        return $res['placeholder'] ?? '';
+    }
+
     public function isAllowedFileType($path = ''): bool
     {
         $extension = pathinfo(parse_url($path, PHP_URL_PATH), PATHINFO_EXTENSION);
@@ -77,7 +84,7 @@ class MediaHelpers
 
             $this->result = $this->processImageURL($fullPath);
         } else {
-            $this->result = Storage::disk($this->storageDisk)->url($this->getDefaultPlaceholder());
+            $this->result = Storage::disk($this->storageDisk)->url($this->getPlaceholderImage());
         }
         return $this->result;
     }
@@ -177,12 +184,6 @@ class MediaHelpers
         return "{$fileTypeFolder}/{$uploadDir}/" . date('Y-m') . "/{$filename}";
     }
 
-    private function getDefaultPlaceholder()
-    {
-        $res = $this->getDefaultFiles(true);
-        return $res['placeholder'];
-    }
-
     private function isDefaultFile($path): bool
     {
         $defaultFiles = $this->defaultFiles();
@@ -213,8 +214,19 @@ class MediaHelpers
             return reset($defaultsFolder);
         } else {
             if (!Storage::exists($defaultFolderName)) {
-                $imageUrl = __DIR__ . '/assets/images/placeholder.png';
-                return $this->storeFile($imageUrl, "{$defaultFolderName}/placeholder.png");
+                $folderurl = __DIR__.'/assets/images/';
+                $imageUrl = [
+                   'placeholder.png',
+                   'avatar.png',
+                   'banner.png',
+                   'fav_icon.png',
+                   'logo.png',
+                   'placeholder.png'
+                ];
+                foreach ($imageUrl as $value) {
+                    $this->storeFile($folderurl.$value, $defaultFolderName.'/'.$value);
+                }
+                return $defaultFolderName;
             } else {
                 return null;
             }

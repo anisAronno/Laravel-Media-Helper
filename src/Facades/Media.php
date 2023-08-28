@@ -19,7 +19,7 @@ class Media extends Facade
       * @method static void upload($request, $fieldName, string $upload_dir)
       * @method static void delete($value)
       *
-      * @see \AnisAronno\MediaHelper\Media
+      * @see \AnisAronno\MediaHelper\MediaHelpers
       */
     protected static function getFacadeAccessor()
     {
@@ -29,9 +29,9 @@ class Media extends Facade
     public static function __callStatic($method, $arguments)
     {
         $instance = static::resolveFacadeInstance(static::getFacadeAccessor());
+        $files = $instance->getAllDefaultFiles(true);
 
         if(Str::startsWith($method, 'getDefault')) {
-            $files = $instance->getAllDefaultFiles(true);
             $key = strtolower(trim(str_replace('getDefault', '', $method)));
 
             if (array_key_exists($key, $files)) {

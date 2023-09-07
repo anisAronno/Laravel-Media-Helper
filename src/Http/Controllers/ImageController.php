@@ -57,9 +57,8 @@ class ImageController extends Controller
      */
     public function store(StoreImageRequest $request): JsonResponse
     {
-        $data = [];
-        $data = $request->input('title', 'Image');
-        $data['user_id'] = auth()->user()->id ;
+        $data['title'] = $request->input('title', 'Image');
+        $data['user_id'] = auth()->user()?->id ;
 
         if ($request->image) {
             $data['url'] = Media::upload($request, 'image', 'images');

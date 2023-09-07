@@ -19,7 +19,7 @@ class Media extends Facade
       * @method static void upload($request, $fieldName, string $upload_dir)
       * @method static void delete($value)
       *
-      * @see \AnisAronno\MediaHelper\MediaHelpers
+      * @see \AnisAronno\MediaHelper\Media
       */
     protected static function getFacadeAccessor()
     {

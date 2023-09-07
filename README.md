@@ -56,15 +56,19 @@ Get Default Image/File
 
 ```
     use AnisAronno\Media\Facades\Media;
-    Media::getgetDefaultFilesURL();
+    Media::getDefaultFilesURL();
 ```
+
 Get as a associative array
+
 ```
-    Media::getgetDefaultFilesURL(true);
+    Media::getDefaultFilesURL(true);
 ```
+
 Get by specific value
+
 ```
-     Media::getgetDefaultFilesURL(true, 'placeholder');
+     Media::getDefaultFilesURL(true, 'placeholder');
 ```
 
 ## Contribution Guide

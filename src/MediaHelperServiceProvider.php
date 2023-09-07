@@ -2,6 +2,7 @@
 
 namespace AnisAronno\MediaHelper;
 
+use AnisAronno\MediaHelper\RouteServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class MediaHelperServiceProvider extends ServiceProvider
@@ -14,6 +15,8 @@ class MediaHelperServiceProvider extends ServiceProvider
         $this->app->singleton('Media', function ($app) {
             return MediaHelpers::getInstance();
         });
+
+        $this->app->register(RouteServiceProvider::class);
 
     }
 

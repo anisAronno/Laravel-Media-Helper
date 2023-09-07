@@ -5,7 +5,7 @@ namespace AnisAronno\MediaHelper\Traits;
 use App\Models\Image;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-trait HasImages
+trait HasMedia
 {
     public function images(): MorphToMany
     {

@@ -2,6 +2,7 @@
 
 namespace AnisAronno\MediaHelper;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -46,7 +47,7 @@ class MediaHelpers
 
         return $this;
     }
-    public function getDefaultFiles($assoc = false, $key = null)
+    public function getAllDefaultFiles($assoc = false, $key = null)
     {
         $defaultFiles = $this->defaultFiles();
 
@@ -63,12 +64,6 @@ class MediaHelpers
         }
     }
 
-
-    public function getPlaceholderImage()
-    {
-        $res = $this->getDefaultFiles(true);
-        return $res['placeholder'] ?? '';
-    }
 
     public function isAllowedFileType($path = ''): bool
     {
@@ -214,18 +209,14 @@ class MediaHelpers
             return reset($defaultsFolder);
         } else {
             if (!Storage::exists($defaultFolderName)) {
-                $folderurl = __DIR__.'/assets/images/';
-                $imageUrl = [
-                   'placeholder.png',
-                   'avatar.png',
-                   'banner.png',
-                   'fav_icon.png',
-                   'logo.png',
-                   'placeholder.png'
-                ];
-                foreach ($imageUrl as $value) {
-                    $this->storeFile($folderurl.$value, $defaultFolderName.'/'.$value);
+                $folderPath = __DIR__.'/assets/images/';
+                $files = File::allFiles($folderPath);
+
+                foreach ($files as $file) {
+                    $file = $file->getFilename();
+                    $this->storeFile($folderPath.$file, $defaultFolderName.'/'.$file);
                 }
+
                 return $defaultFolderName;
             } else {
                 return null;
@@ -261,4 +252,6 @@ class MediaHelpers
     {
         return  $this->storageURL . $value;
     }
+
+
 }

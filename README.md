@@ -7,7 +7,7 @@
 Install package with composer command
 
 ```
-composer require anisaronno/laravel-media-helper
+    composer require anisaronno/laravel-media-helper
 ```
 
 Store Image/File
@@ -58,13 +58,13 @@ Get Default Image/File
     use AnisAronno\Media\Facades\Media;
     Media::getgetDefaultFilesURL();
 ```
-
+Get as a associative array
 ```
-Media::getgetDefaultFilesURL(true); // get associative array
+    Media::getgetDefaultFilesURL(true);
 ```
-
+Get by specific value
 ```
-    Media::getgetDefaultFilesURL(true, 'placeholder'); // get specific value
+     Media::getgetDefaultFilesURL(true, 'placeholder');
 ```
 
 ## Contribution Guide

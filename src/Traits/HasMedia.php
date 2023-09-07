@@ -2,7 +2,7 @@
 
 namespace AnisAronno\MediaHelper\Traits;
 
-use App\Models\Image;
+use AnisAronno\MediaHelper\Models\Image;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 trait HasMedia

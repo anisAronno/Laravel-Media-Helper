@@ -79,7 +79,7 @@ class MediaHelpers
 
             $this->result = $this->processImageURL($fullPath);
         } else {
-            $this->result = Storage::disk($this->storageDisk)->url($this->getPlaceholderImage());
+            $this->result = Storage::disk($this->storageDisk)->url($this->getAllDefaultFiles(true, 'placeholder'));
         }
         return $this->result;
     }

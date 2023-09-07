@@ -2,6 +2,8 @@
 
 namespace AnisAronno\MediaHelper;
 
+use AnisAronno\MediaHelper\Models\Image;
+use AnisAronno\MediaHelper\Observers\ImageObserver;
 use AnisAronno\MediaHelper\RouteServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +29,7 @@ class MediaHelperServiceProvider extends ServiceProvider
     {
         $this->registerMigration();
         $this->registerConfig();
+        Image::observe(ImageObserver::class);
     }
 
 

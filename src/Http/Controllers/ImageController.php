@@ -3,6 +3,8 @@
 namespace AnisAronno\MediaHelper\Http\Controllers;
 
 use AnisAronno\MediaHelper\Facades\Media;
+use AnisAronno\MediaHelper\Helpers\CacheHelper;
+use AnisAronno\MediaHelper\Helpers\ImageDataProcessor;
 use AnisAronno\MediaHelper\Http\Requests\StoreImageRequest;
 use AnisAronno\MediaHelper\Http\Requests\UpdateImageRequest;
 use AnisAronno\MediaHelper\Http\Resources\ImageResources;
@@ -21,18 +23,35 @@ class ImageController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $images = Image::query()
-            ->when($request->has('search'), function ($query) use ($request) {
-                $query->where('title', 'LIKE', '%' . $request->input('search') . '%');
-            })
-            ->when($request->has('startDate') && $request->has('endDate'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [
-                    new \DateTime($request->input('startDate')),
-                    new \DateTime($request->input('endDate'))
-                ]);
-            })
-            ->orderBy($request->input('orderBy', 'id'), $request->input('order', 'desc'))
-            ->paginate(20)->withQueryString();
+        $orderBy = $request->query('orderBy', 'created_at');
+        $order = $request->query('order', 'desc');
+        $search = $request->query('search', '');
+        $startDate = $request->query('startDate', '');
+        $endDate = $request->query('endDate', '');
+        $page = $request->query('page', 1);
+
+        $imageCacheKey = CacheHelper::getImageCacheKey();
+
+        $key =  $imageCacheKey.md5(serialize([$orderBy, $order,  $page, $search, $startDate, $endDate,  ]));
+
+        $images = CacheHelper::init($imageCacheKey)->remember(
+            $key,
+            now()->addDay(),
+            function () use ($request) {
+                return Image::query()
+                    ->when($request->has('search'), function ($query) use ($request) {
+                        $query->where('title', 'LIKE', '%' . $request->input('search') . '%');
+                    })
+                    ->when($request->has('startDate') && $request->has('endDate'), function ($query) use ($request) {
+                        $query->whereBetween('created_at', [
+                            new \DateTime($request->input('startDate')),
+                            new \DateTime($request->input('endDate'))
+                        ]);
+                    })
+                    ->orderBy($request->input('orderBy', 'id'), $request->input('order', 'desc'))
+                    ->paginate(20)->withQueryString();
+            }
+        );
 
         return response()->json(ImageResources::collection($images));
     }
@@ -57,15 +76,9 @@ class ImageController extends Controller
      */
     public function store(StoreImageRequest $request): JsonResponse
     {
+        $data = ImageDataProcessor::process($request);
         $data['title'] = $request->input('title', 'Image');
-        $data['user_id'] = auth()->user()?->id ;
-
-        if ($request->image) {
-            $data['url'] = Media::upload($request, 'image', 'images');
-            $data['mimes'] = $request->image->extension();
-            $data['type'] = $request->image->getClientMimeType();
-            $data['size'] = number_format($request->image->getSize() / (1024 * 1024), 2, '.', '')."MB";
-        }
+        $data['user_id'] = $request->user()?->id ;
 
         try {
             Image::create($data);

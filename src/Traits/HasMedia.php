@@ -24,4 +24,21 @@ trait HasMedia
             ->latest()
             ->limit(1);
     }
+
+    /**
+     * Media Upload with DB
+     *
+     * @param array $ids
+     * @param boolean $isFeatured
+     * @return void
+     */
+    public function upload(array $ids, $isFeatured): void
+    {
+        if ($isFeatured) {
+            $this->images()->attach($ids, ['is_featured' => 1]);
+        } else {
+            $this->images()->attach($ids);
+        }
+
+    }
 }

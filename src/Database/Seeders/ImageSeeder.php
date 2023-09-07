@@ -21,6 +21,6 @@ class ImageSeeder extends Seeder
         Image::truncate();
         Schema::enableForeignKeyConstraints();
 
-        Image::factory()->count(10)->create();
+        Image::factory()->count(50)->create();
     }
 }

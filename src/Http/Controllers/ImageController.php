@@ -7,8 +7,8 @@ use AnisAronno\MediaHelper\Http\Requests\StoreImageRequest;
 use AnisAronno\MediaHelper\Http\Requests\UpdateImageRequest;
 use AnisAronno\MediaHelper\Http\Resources\ImageResources;
 use AnisAronno\MediaHelper\Models\Image;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller;
 
 class ImageController extends Controller
@@ -17,9 +17,9 @@ class ImageController extends Controller
      * Get ALl Image
      *
      * @param Request $request
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function index(Request $request): JsonResource
+    public function index(Request $request): JsonResponse
     {
         $images = Image::query()
             ->when($request->has('search'), function ($query) use ($request) {
@@ -42,9 +42,9 @@ class ImageController extends Controller
      * Show Image
      *
      * @param Image $image
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function show(Image $image): JsonResource
+    public function show(Image $image): JsonResponse
     {
         return  response()->json(new ImageResources($image));
     }
@@ -53,9 +53,9 @@ class ImageController extends Controller
      *   Image store
      *
      * @param StoreImageRequest $request
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function store(StoreImageRequest $request): JsonResource
+    public function store(StoreImageRequest $request): JsonResponse
     {
         $data = [];
         $data = $request->input('title', 'Image');
@@ -81,9 +81,9 @@ class ImageController extends Controller
      *
      * @param UpdateImageRequest $request
      * @param Image $image
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function update(UpdateImageRequest $request, Image $image): JsonResource
+    public function update(UpdateImageRequest $request, Image $image): JsonResponse
     {
         try {
             $image->update($request->only('title'));
@@ -97,9 +97,9 @@ class ImageController extends Controller
      * Delete image
      *
      * @param Image $image
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function destroy(Image $image): JsonResource
+    public function destroy(Image $image): JsonResponse
     {
         try {
             Media::delete($image->url);
@@ -116,9 +116,9 @@ class ImageController extends Controller
      * Image Group Delete
      *
      * @param Request $request
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function groupDelete(Request $request): JsonResource
+    public function groupDelete(Request $request): JsonResponse
     {
         try {
             foreach ($request->data as  $image) {

@@ -27,6 +27,6 @@ class Image extends Model
 
     public function getUrlAttribute($value)
     {
-        return  $this->attributes['url'] = Media::getUrl($value);
+        return  $this->attributes['url'] = Media::getURL($value);
     }
 }

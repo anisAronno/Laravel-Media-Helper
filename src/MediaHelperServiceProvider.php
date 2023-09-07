@@ -33,6 +33,7 @@ class MediaHelperServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/Database/Migrations/2023_01_06_195610_create_images_table.php' => database_path('migrations/'. date('Y_m_d_His', time()).'_create_media_settings_table.php'),
+            __DIR__ . '/Database/Migrations/2023_02_11_174512_create_imageables_table.php' => database_path('migrations/'. date('Y_m_d_His', time()).'_create_imageables_table.php'),
         ], 'media-migration');
     }
 

@@ -41,6 +41,11 @@ class MediaHelperServiceProvider extends ServiceProvider
             __DIR__ . '/Database/Migrations/2023_01_06_195610_create_images_table.php' => database_path('migrations/2023_01_06_195610_create_images_table.php'),
             __DIR__ . '/Database/Migrations/2023_02_11_174512_create_imageables_table.php' => database_path('migrations/2023_02_11_174512_create_imageables_table.php'),
         ], 'media-migration');
+
+        $this->publishes([
+            __DIR__ . '/Database/Factories/ImageFactory.php' => database_path('factories/ImageFactory.php'),
+            __DIR__ . '/Database/Seeders/ImageSeeder.php' => database_path('seeders/ImageSeeder.php'),
+        ], 'media-seeder');
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace AnisAronno\MediaHelper\Database\Seeders;
+namespace Database\Seeders;
 
 use AnisAronno\MediaHelper\Models\Image;
 use Illuminate\Database\Seeder;

@@ -1,6 +1,6 @@
 <?php
 
-namespace AnisAronno\MediaHelper\Database\Factories;
+namespace Database\Factories;
 
 use AnisAronno\MediaHelper\Models\Image;
 use App\Models\User;

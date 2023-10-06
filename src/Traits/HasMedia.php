@@ -26,19 +26,44 @@ trait HasMedia
     }
 
     /**
-     * Media Upload with DB
+     * Media Attach/Store with DB
      *
      * @param array $ids
      * @param boolean $isFeatured
      * @return void
      */
-    public function upload(array $ids, $isFeatured): void
+    public function attachImages(array $ids, $isFeatured = false): void
     {
         if ($isFeatured) {
-            $this->images()->attach($ids, ['is_featured' => 1]);
+            static::images()->attach($ids, ['is_featured' => 1]);
         } else {
-            $this->images()->attach($ids);
+            static::images()->attach($ids);
         }
+    }
+    /**
+     * Media Sync with DB
+     *
+     * @param array $ids
+     * @param boolean $isFeatured
+     * @return void
+     */
+    public function syncImages(array $ids, $isFeatured = false): void
+    {
 
+        if ($isFeatured) {
+            static::images()->sync($ids, ['is_featured' => 1]);
+        } else {
+            static::images()->sync($ids);
+        }
+    }
+    /**
+     * Detach Images with DB
+     *
+     * @param array $ids
+     * @return void
+     */
+    public function detachImages(array $ids): void
+    {
+        static::images()->detach($ids);
     }
 }

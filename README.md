@@ -80,33 +80,33 @@ Or Get by specific method
     Media::getDefaultPlaceholder();
 ```
 
-# Use as a Media Library
+# Use as a Media Library with Storing Media in DB
 
 publish migration file, factory, config, seeder
 
 ```
-php artisan vendor:publish
+    php artisan vendor:publish
 ```
 
 ## Run Migration
 
 ```
-php artisan migrate
+    php artisan migrate
 ```
 
 ## Run Seeder
 
 ```
-php artisan db:seed --class=ImageSeeder
+    php artisan db:seed --class=ImageSeeder
 ```
 
 ## Define this relation in User Model
 
 ```
-public function images(): HasMany
-{
-    return $this->hasMany(Image::class, 'user_id', 'id');
-}
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'user_id', 'id');
+    }
 ```
 
 ## Now Use in another Model for storing image/media (Like: Blog, Product Model etc.)
@@ -114,9 +114,9 @@ public function images(): HasMany
 Use HasMedia Trait in your targeted Model.
 
 ```
-use AnisAronno\MediaHelper\Traits\HasMedia;
-
-use HasMedia;
+    use AnisAronno\MediaHelper\Traits\HasMedia;
+    
+    use HasMedia;
 
 ```
 
@@ -126,20 +126,20 @@ Like: User have Blog and Blog use HasMedia Trait.
 now follow this code for creating seeder
 
 ```
-use App\Models\Blog;
-use App\Models\User;
-use Database\Factories\ImageFactory;
-
-User::factory()->count(10)
-    ->has(
-        Blog::factory()->count(10)
-        ->has(ImageFactory::new()->count(5), 'images')
-        ->afterCreating(function ($blog) {
-            $blog->images->first()->pivot->is_featured = 1;
-            $blog->images->first()->pivot->save();
-        })
-    )
-    ->create();
+    use App\Models\Blog;
+    use App\Models\User;
+    use Database\Factories\ImageFactory;
+    
+    User::factory()->count(10)
+        ->has(
+            Blog::factory()->count(10)
+            ->has(ImageFactory::new()->count(5), 'images')
+            ->afterCreating(function ($blog) {
+                $blog->images->first()->pivot->is_featured = 1;
+                $blog->images->first()->pivot->save();
+            })
+        )
+        ->create();
 ```
 
 ## Media/Image Retrieve, Store, Update and Delete
@@ -158,29 +158,29 @@ Delete All Image: `image/delete-all` &nbsp; - &nbsp; (`@method('POST')`) <br>
 Like: You want to store image for a blog model.
 
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->images()->attach(array $id);
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $blog->images()->attach(array $id);
 ```
 
 If you want to sync or update image for a blog model.
 
 ```
-$blog = Blog::query(); or new Blog();
-$blog->images()->sync(array $id);
+    $blog = Blog::query(); or new Blog();
+    $blog->images()->sync(array $id);
 ```
 
 If you want to delete image/media image for a blog model.
 
 ```
-$blog = Blog::query(); or new Blog();
-$blog->images()->detach(array $id);
+    $blog = Blog::query(); or new Blog();
+    $blog->images()->detach(array $id);
 ```
 
 ## Working with single or feature image
 Just use `image` instead of `images` method and use isFeatured is `true` in 2nd parameter
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->image()->attach(array $id, ['is_featured' => 1]);
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $blog->image()->attach(array $id, ['is_featured' => 1]);
 ```
 Note: Sync and detach are same. just use `image` instead of `images``.
 
@@ -191,38 +191,45 @@ Note: `isFeatured` options for make feature image for this blog post
 For Attach:
 
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->attachImages(array $ids, $isFeatured = false);
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $blog->attachImages(array $ids, $isFeatured = false);
 ```
 
 
 For Sync:
 
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->syncImages(array $ids, $isFeatured = false);
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $blog->syncImages(array $ids, $isFeatured = false);
 ```
 
 For Delete:
 
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->detachImages(array $ids, $isFeatured = false);
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $blog->detachImages(array $ids, $isFeatured = false);
 ```
 
 ## Fetch Media/Image from relational model
 - Fetch all images as a array
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->images;
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $image = $blog->images;
 ```
 - Fetch feature image only
 ```
-$blog = Blog::query(); or new Blog(); //Blog Model Instance
-$blog->image;
+    $blog = Blog::query(); or new Blog(); //Blog Model Instance
+    $image = $blog->image;
 ```
 
-
+Then you can show data with this way
+```
+    $image->url;
+    $image->title;
+    $image->mimes;
+    $image->size;
+    $image->type;
+```
 
 # Contribution Guide
 

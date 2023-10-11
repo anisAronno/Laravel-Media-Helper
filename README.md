@@ -1,240 +1,233 @@
-## Laravel Media Helper
+# Laravel Media Helper
 
-# Getting started
+## Table of Contents
+- [Laravel Media Helper](#laravel-media-helper)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Store Image/File](#store-imagefile)
+    - [Store Image/File with Storage Disk](#store-imagefile-with-storage-disk)
+    - [Get Image/File](#get-imagefile)
+    - [Get Image/File with Storage Disk](#get-imagefile-with-storage-disk)
+    - [Delete Image/File](#delete-imagefile)
+    - [Delete Image/File with Storage Disk](#delete-imagefile-with-storage-disk)
+    - [Get Default Image/File](#get-default-imagefile)
+    - [Get as an Associative Array](#get-as-an-associative-array)
+    - [Get by Specific Value](#get-by-specific-value)
+  - [Use as a Media Library with Storing Media in DB](#use-as-a-media-library-with-storing-media-in-db)
+    - [Publish Migration, Factory, Config, Seeder](#publish-migration-factory-config-seeder)
+    - [Run Migration](#run-migration)
+    - [Run Seeder](#run-seeder)
+    - [Define Relation in User Model](#define-relation-in-user-model)
+    - [Use in Another Model for Storing Media](#use-in-another-model-for-storing-media)
+    - [Use Seeder with Relation Mapping](#use-seeder-with-relation-mapping)
+  - [Media/Image Retrieve, Store, Update and Delete](#mediaimage-retrieve-store-update-and-delete)
+  - [Use Media with Relational Model](#use-media-with-relational-model)
+  - [Working with Single or Featured Image](#working-with-single-or-featured-image)
+  - [Helper Methods](#helper-methods)
+  - [Fetch Media/Image from Relational Model](#fetch-mediaimage-from-relational-model)
+  - [Contribution Guide](#contribution-guide)
+  - [License](#license)
+
+## Introduction
+The Laravel Media Helper simplifies the management of media and image files in your Laravel project. This README provides installation instructions, usage examples, and additional information.
 
 ## Installation
+To get started, install the package using Composer:
 
-Install package with composer command
-
-```
-    composer require anisaronno/laravel-media-helper
-```
-
-Store Image/File
-
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::upload($request, $fieldName, string $upload_dir)
+```shell
+composer require anisaronno/laravel-media-helper
 ```
 
-Store Image/File with storage disk
+## Usage
 
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::setStorageDisk('public')->upload($request, $fieldName, string $upload_dir)
-```
+### Store Image/File
+Upload an image or file:
 
-Get Image/File
-
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::getURL($path)
+```php
+use AnisAronno\Media\Facades\Media;
+Media::upload($request, $fieldName, string $upload_dir)
 ```
 
-Get Image/File with storage disk
+### Store Image/File with Storage Disk
+Upload an image or file with a specific storage disk:
 
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::setStorageDisk('public')->getURL($path);
-```
-
-Delete Image/File
-
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::delete($path)
+```php
+use AnisAronno\Media\Facades\Media;
+Media::setStorageDisk('public')->upload($request, $fieldName, string $upload_dir)
 ```
 
-Delete Image/File with storage disk
+### Get Image/File
+Retrieve an image or file by its path:
 
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::setStorageDisk('public')->delete($path)
-```
-
-Get Default Image/File
-
-```
-    use AnisAronno\Media\Facades\Media;
-    Media::getDefaultFilesURL();
+```php
+use AnisAronno\Media\Facades\Media;
+Media::getURL($path)
 ```
 
-Get as a associative array
+### Get Image/File with Storage Disk
+Retrieve an image or file with a specific storage disk:
 
-```
-    Media::getDefaultFilesURL(true);
-```
-
-Get by specific value
-
-```
-     Media::getDefaultFilesURL(true, 'placeholder');
-```
-Or Get by specific method
-
-```
-    Media::getDefaultLogo();
-    Media::getDefaultFavIcon();
-    Media::getDefaultBanner();
-    Media::getDefaultAvatar();
-    Media::getDefaultPlaceholder();
+```php
+use AnisAronno\Media\Facades\Media;
+Media::setStorageDisk('public')->getURL($path)
 ```
 
-# Use as a Media Library with Storing Media in DB
+### Delete Image/File
+Delete an image or file by its path:
 
-publish migration file, factory, config, seeder
-
-```
-    php artisan vendor:publish
-```
-
-## Run Migration
-
-```
-    php artisan migrate
+```php
+use AnisAronno\Media\Facades\Media;
+Media::delete($path)
 ```
 
-## Run Seeder
+### Delete Image/File with Storage Disk
+Delete an image or file with a specific storage disk:
 
-```
-    php artisan db:seed --class=ImageSeeder
-```
-
-## Define this relation in User Model
-
-```
-    public function images(): HasMany
-    {
-        return $this->hasMany(Image::class, 'user_id', 'id');
-    }
+```php
+use AnisAronno\Media\Facades\Media;
+Media::setStorageDisk('public')->delete($path)
 ```
 
-## Now Use in another Model for storing image/media (Like: Blog, Product Model etc.)
+### Get Default Image/File
+Retrieve the default image or file:
 
-Use HasMedia Trait in your targeted Model.
-
-```
-    use AnisAronno\MediaHelper\Traits\HasMedia;
-    
-    use HasMedia;
-
+```php
+use AnisAronno\Media\Facades\Media;
+Media::getDefaultFilesURL();
 ```
 
-## Use seeder with relation mapping
+### Get as an Associative Array
+Retrieve default files as an associative array:
 
-Like: User have Blog and Blog use HasMedia Trait.
-now follow this code for creating seeder
-
+```php
+Media::getDefaultFilesURL(true);
 ```
-    use App\Models\Blog;
-    use App\Models\User;
-    use Database\Factories\ImageFactory;
-    
-    User::factory()->count(10)
-        ->has(
-            Blog::factory()->count(10)
-            ->has(ImageFactory::new()->count(5), 'images')
-            ->afterCreating(function ($blog) {
-                $blog->images->first()->pivot->is_featured = 1;
-                $blog->images->first()->pivot->save();
-            })
-        )
-        ->create();
+
+### Get by Specific Value
+Retrieve default files by specific value or method:
+
+```php
+Media::getDefaultFilesURL(true, 'placeholder');
+Media::getDefaultLogo();
+Media::getDefaultFavIcon();
+Media::getDefaultBanner();
+Media::getDefaultAvatar();
+Media::getDefaultPlaceholder();
+```
+
+## Use as a Media Library with Storing Media in DB
+For media library features, follow these steps:
+
+### Publish Migration, Factory, Config, Seeder
+Publish the migration file, factory, configuration, and seeder:
+
+```shell
+php artisan vendor:publish
+```
+
+### Run Migration
+Apply the migrations to set up the media storage table:
+
+```shell
+php artisan migrate
+```
+
+### Run Seeder
+Seed the media storage table with initial data:
+
+```shell
+php artisan db:seed --class=ImageSeeder
+```
+
+### Define Relation in User Model
+If you want to associate media with a user, add the following relation in your User model:
+
+```php
+public function images(): HasMany
+{
+    return $this->hasMany(Image::class, 'user_id', 'id');
+}
+```
+
+### Use in Another Model for Storing Media
+To use media storage in another model (e.g., Blog, Product), add the `HasMedia` trait:
+
+```php
+use AnisAronno\MediaHelper\Traits\HasMedia;
+use HasMedia;
+```
+
+### Use Seeder with Relation Mapping
+If you want to set up seed data with relation mapping (e.g., User has Blog, Blog uses HasMedia Trait), follow this code for creating a seeder:
+
+```php
+use App\Models\Blog;
+use App\Models\User;
+use Database\Factories\ImageFactory;
+
+User::factory()->count(10)
+    ->has(
+        Blog::factory()->count(10)
+        ->has(ImageFactory::new()->count(5), 'images')
+        ->afterCreating(function ($blog) {
+            $blog->images->first()->pivot->is_featured = 1;
+            $blog->images->first()->pivot->save();
+        })
+    )
+    ->create();
 ```
 
 ## Media/Image Retrieve, Store, Update and Delete
+To manage your media storage, you can use the following routes:
 
-Follow this slug after your domain path
+- Get all images: `api/image` (GET)
+- Get a single image: `api/image/{id}` (GET)
+- Store an image: `api/image` (POST)
+- Delete an image: `api/image/{id}` (DELETE)
+- Update an image: `api/image/update` (POST)
+- Delete all images: `image/delete-all` (POST)
 
-Get all image: `api/image` &nbsp; - &nbsp; (`@method('GET')`)<br>
-Get single image: `api/image/{id}` &nbsp; - &nbsp; (`@method('GET')`)<br>
-Store image: `api/image` &nbsp; - &nbsp; (`@method('POST')`)<br>
-Delete image: `api/image/{id}` &nbsp; - &nbsp; (`@method('DELETE')`)<br>
-Update image: `api/image/update` &nbsp; - &nbsp; (`@method('POST')`)<br>
-Delete All Image: `image/delete-all` &nbsp; - &nbsp; (`@method('POST')`) <br>
+## Use Media with Relational Model
+If you want to store images for a relational model (e.g., Blog), you can use the following methods:
 
-## use Media with relational Model
+- Attach: `$blog->images()->attach(array $id)`
+- Sync: `$blog->images()->sync(array $id)`
+- Delete: `$blog->images()->detach(array $id)`
 
-Like: You want to store image for a blog model.
+## Working with Single or Featured Image
+To work with a single or featured image, use the `image` method and set `isFeatured` to `true` in the second parameter:
 
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $blog->images()->attach(array $id);
-```
+- Attach: `$blog->image()->attach(array $id, ['is_featured' => 1])`
 
-If you want to sync or update image for a blog model.
+Note: Sync and detach are the same; use `image` instead of `images`.
 
-```
-    $blog = Blog::query(); or new Blog();
-    $blog->images()->sync(array $id);
-```
+## Helper Methods
+You can also use helper methods for media management:
 
-If you want to delete image/media image for a blog model.
+-
 
-```
-    $blog = Blog::query(); or new Blog();
-    $blog->images()->detach(array $id);
-```
+ For Attach: `$blog->attachImages(array $ids, $isFeatured = false)`
+- For Sync: `$blog->syncImages(array $ids, $isFeatured = false)`
+- For Delete: `$blog->detachImages(array $ids, $isFeatured = false)`
 
-## Working with single or feature image
-Just use `image` instead of `images` method and use isFeatured is `true` in 2nd parameter
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $blog->image()->attach(array $id, ['is_featured' => 1]);
-```
-Note: Sync and detach are same. just use `image` instead of `images``.
+## Fetch Media/Image from Relational Model
+To retrieve media/images from a relational model:
 
+- Fetch all images as an array: `$blog->images`
+- Fetch the featured image only: `$blog->image`
 
-## Or You can use helper method
-Note: `isFeatured` options for make feature image for this blog post
+You can access image properties like URL, title, mimes, size, and type:
 
-For Attach:
+- `$image->url`
+- `$image->title`
+- `$image->mimes`
+- `$image->size`
+- `$image->type`
 
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $blog->attachImages(array $ids, $isFeatured = false);
-```
-
-
-For Sync:
-
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $blog->syncImages(array $ids, $isFeatured = false);
-```
-
-For Delete:
-
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $blog->detachImages(array $ids, $isFeatured = false);
-```
-
-## Fetch Media/Image from relational model
-- Fetch all images as a array
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $image = $blog->images;
-```
-- Fetch feature image only
-```
-    $blog = Blog::query(); or new Blog(); //Blog Model Instance
-    $image = $blog->image;
-```
-
-Then you can show data with this way
-```
-    $image->url;
-    $image->title;
-    $image->mimes;
-    $image->size;
-    $image->type;
-```
-
-# Contribution Guide
-
-Follow the [Link](https://github.com/anisAronno/multipurpose-admin-panel-boilerplate/blob/develop/CONTRIBUTING.md).
+## Contribution Guide
+Please follow our [Contribution Guide](https://github.com/anisAronno/multipurpose-admin-panel-boilerplate/blob/develop/CONTRIBUTING.md) if you'd like to contribute to this package.
 
 ## License
-
-The application is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This package is open-source software licensed under the [MIT License](https://opensource.org/licenses/MIT).

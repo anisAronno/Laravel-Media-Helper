@@ -1,21 +1,14 @@
 {
     "name": "anisaronno/laravel-media-helper",
     "description": "Laravel Media Helper",
-    "version": "0.3.2",
+    "version": "0.4.0",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "AnisAronno\\MediaHelper\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "AnisAronno\\Tests\\": "tests",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        }
-    },
+    "keywords": [
+        "laravel-media-helper",
+        "WordPress",
+        "Laravel",
+        "wedevs"
+    ],
     "authors": [
         {
             "name": "MD. Anichur Rahaman",
@@ -24,49 +17,45 @@
             "role": "Developer"
         }
     ],
-    "keywords": [
-        "Media",
-        "Gallery",
-        "File",
-        "Laravel",
-        "wedevs"
-    ],
     "homepage": "https://github.com/anisAronno/laravel-media-helper",
     "require": {
-        "php": "^8.0",
-        "illuminate/database": "^8.12|^9.0|^10.0",
-        "laravel/framework": "^8.37|^9.0|^10.0"
+        "php": "^7.4|^8.0",
+        "laravel/framework": "^8.0|^9.0|^10.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.9",
-        "phpunit/phpunit": "^9.0"
+        "mockery/mockery": "^1.4",
+        "orchestra/testbench": "^8.0",
+        "phpunit/phpunit": "^9.0",
+        "pestphp/pest": "^1.21"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "config": {
-        "sort-packages": true
+    "autoload": {
+        "psr-4": {
+            "AnisAronno\\MediaHelper\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AnisAronno\\MediaHelper\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage"
     },
     "extra": {
         "laravel": {
             "providers": [
-                "AnisAronno\\MediaHelper\\MediaHelperServiceProvider"
+                "AnisAronno\\LaravelSettings\\MediaHelperServiceProvider"
             ]
         }
     },
-    "scripts": {
-        "test": "phpunit",
-        "format": "php-cs-fixer fix --allow-risky=yes",
-        "analyse": "phpstan analyse",
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "@build",
-            "@php vendor/bin/testbench serve"
-        ]
-    }
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

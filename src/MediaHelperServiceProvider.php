@@ -2,9 +2,6 @@
 
 namespace AnisAronno\MediaHelper;
 
-use AnisAronno\MediaHelper\Models\Image;
-use AnisAronno\MediaHelper\Observers\ImageObserver;
-use AnisAronno\MediaHelper\RouteServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class MediaHelperServiceProvider extends ServiceProvider
@@ -18,8 +15,6 @@ class MediaHelperServiceProvider extends ServiceProvider
             return MediaHelpers::getInstance();
         });
 
-        $this->app->register(RouteServiceProvider::class);
-
     }
 
     /**
@@ -27,25 +22,7 @@ class MediaHelperServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerMigration();
         $this->registerConfig();
-        Image::observe(ImageObserver::class);
-    }
-
-
-    protected function registerMigration()
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-
-        $this->publishes([
-            __DIR__ . '/Database/Migrations/2023_01_06_195610_create_images_table.php' => database_path('migrations/2023_01_06_195610_create_images_table.php'),
-            __DIR__ . '/Database/Migrations/2023_02_11_174512_create_imageables_table.php' => database_path('migrations/2023_02_11_174512_create_imageables_table.php'),
-        ], 'media-migration');
-
-        $this->publishes([
-            __DIR__ . '/Database/Factories/ImageFactory.php' => database_path('factories/ImageFactory.php'),
-            __DIR__ . '/Database/Seeders/ImageSeeder.php' => database_path('seeders/ImageSeeder.php'),
-        ], 'media-seeder');
     }
 
     /**

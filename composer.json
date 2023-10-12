@@ -1,7 +1,7 @@
 {
     "name": "anisaronno/laravel-media-helper",
     "description": "Laravel Media Helper",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "license": "MIT",
     "keywords": [
         "laravel-media-helper",
@@ -46,7 +46,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "AnisAronno\\LaravelSettings\\MediaHelperServiceProvider"
+                "AnisAronno\\MediaHelper\\MediaHelperServiceProvider"
             ]
         }
     },

@@ -8,11 +8,11 @@ use Illuminate\Support\Str;
 
 class MediaHelpers
 {
-    private $fileTypeFolders = [];
-    private $storageDisk;
-    private $storageURL;
+    private array $fileTypeFolders = [];
+    private string $storageDisk;
+    private string $storageURL;
     private $result;
-    private static $instance;
+    private static MediaHelpers $instance;
 
     private function __construct($fileTypeArray = [])
     {
@@ -32,7 +32,11 @@ class MediaHelpers
         $this->storageURL = $this->storageDisk == 'local' ? 'public/' : '';
     }
 
-    public static function getInstance($fileTypeFolders = [])
+    /**
+     * @param  array  $fileTypeFolders
+     * @return MediaHelpers|self
+     */
+    public static function getInstance(array $fileTypeFolders = []): MediaHelpers
     {
         if (!self::$instance) {
             self::$instance = new self($fileTypeFolders);
@@ -40,18 +44,28 @@ class MediaHelpers
         return self::$instance;
     }
 
-    public function setStorageDisk($disk)
+    /**
+     * @param $disk
+     * @return $this
+     */
+    public function setStorageDisk($disk): static
     {
         $this->storageDisk = $disk;
         $this->storageURL = $this->storageDisk == 'local' ? 'public/' : '';
 
         return $this;
     }
+
+    /**
+     * @param $assoc
+     * @param $key
+     * @return array|mixed
+     */
     public function getAllDefaultFiles($assoc = false, $key = null)
     {
         $defaultFiles = $this->defaultFiles();
 
-        if($assoc == false) {
+        if(!$assoc) {
             return $defaultFiles;
         } else {
             $defaultFilesArr = $this->mappingDefaultFiles($defaultFiles);
@@ -59,12 +73,16 @@ class MediaHelpers
             if(is_null($key)) {
                 return $defaultFilesArr;
             } else {
-                return is_array($defaultFilesArr) && array_key_exists($key, $defaultFilesArr) ? $defaultFilesArr[$key] : [];
+                return array_key_exists($key, $defaultFilesArr) ? $defaultFilesArr[$key] : [];
             }
         }
     }
 
 
+    /**
+     * @param $path
+     * @return bool
+     */
     public function isAllowedFileType($path = ''): bool
     {
         $extension = pathinfo(parse_url($path, PHP_URL_PATH), PATHINFO_EXTENSION);
@@ -73,7 +91,11 @@ class MediaHelpers
         return in_array($extension, $allowedExtensions);
     }
 
-    public function getURL($fullPath)
+    /**
+     * @param $fullPath
+     * @return string
+     */
+    public function getURL($fullPath): string
     {
         if (!empty($fullPath)) {
 
@@ -84,6 +106,12 @@ class MediaHelpers
         return $this->result;
     }
 
+    /**
+     * @param $request
+     * @param $fieldName
+     * @param  string  $uploadDir
+     * @return false|mixed|string
+     */
     public function upload($request, $fieldName, string $uploadDir = 'common')
     {
         try {
@@ -108,6 +136,10 @@ class MediaHelpers
         return $this->result;
     }
 
+    /**
+     * @param $fullPath
+     * @return bool|string
+     */
     public function delete($fullPath): bool|string
     {
         $path = $this->getPathFromValue($fullPath);
@@ -128,6 +160,10 @@ class MediaHelpers
        return $this->result;
     }
 
+    /**
+     * @param $fullPath
+     * @return string
+     */
     private function processImageURL($fullPath): string
     {
         $path = $this->getPathFromValue($fullPath);
@@ -142,6 +178,11 @@ class MediaHelpers
 
     }
 
+    /**
+     * @param $file
+     * @param $file_path
+     * @return mixed
+     */
     private function storeFile($file, $file_path)
     {
 
@@ -151,6 +192,10 @@ class MediaHelpers
         return $file_path;
     }
 
+    /**
+     * @param $value
+     * @return false|string
+     */
     private function getPathFromValue($value)
     {
         $fileExtension = pathinfo(parse_url($value, PHP_URL_PATH), PATHINFO_EXTENSION);
@@ -159,12 +204,20 @@ class MediaHelpers
         return stristr($value, $fileTypeFolder);
     }
 
-    private function existsInStorage($path)
+    /**
+     * @param $path
+     * @return bool
+     */
+    private function existsInStorage($path): bool
     {
         return Storage::disk($this->storageDisk)->exists($this->fullPath($path));
     }
 
-    private function generateUniqueFileName($file)
+    /**
+     * @param $file
+     * @return string
+     */
+    private function generateUniqueFileName($file): string
     {
         $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $slug = Str::slug($name);
@@ -173,12 +226,22 @@ class MediaHelpers
         return substr($slug, 0, 150) . '-' . time() . '.' . $extension;
     }
 
-    private function getFilePath($filename, $uploadDir, $extension)
+    /**
+     * @param $filename
+     * @param $uploadDir
+     * @param $extension
+     * @return string
+     */
+    private function getFilePath($filename, $uploadDir, $extension): string
     {
         $fileTypeFolder = $this->getFileTypeFolder($extension);
         return "{$fileTypeFolder}/{$uploadDir}/" . date('Y-m') . "/{$filename}";
     }
 
+    /**
+     * @param $path
+     * @return bool
+     */
     private function isDefaultFile($path): bool
     {
         $defaultFiles = $this->defaultFiles();
@@ -194,13 +257,20 @@ class MediaHelpers
         return in_array($trimPath, $defaultFiles);
     }
 
-    private function defaultFiles()
+    /**
+     * @return array
+     */
+    private function defaultFiles(): array
     {
         $defaultFolderPath = $this->findDefaultsFolderPath();
         return $defaultFolderPath ? Storage::disk($this->storageDisk)->files($defaultFolderPath) : [];
     }
 
-    private function findDefaultsFolderPath($defaultFolderName = 'defaults')
+    /**
+     * @param  string  $defaultFolderName
+     * @return mixed
+     */
+    private function findDefaultsFolderPath(string $defaultFolderName = 'defaults'): mixed
     {
         $directories = Storage::disk($this->storageDisk)->allDirectories();
         $defaultsFolder = array_filter($directories, fn ($directory) => Str::contains($directory, $defaultFolderName));
@@ -224,6 +294,10 @@ class MediaHelpers
         }
     }
 
+    /**
+     * @param $extension
+     * @return int|string
+     */
     private function getFileTypeFolder($extension)
     {
         foreach ($this->fileTypeFolders as $folder => $extensions) {
@@ -236,6 +310,10 @@ class MediaHelpers
     }
 
 
+    /**
+     * @param $defaultFiles
+     * @return array
+     */
     public function mappingDefaultFiles($defaultFiles): array
     {
         $fileMapping = [];
@@ -248,6 +326,10 @@ class MediaHelpers
         return $fileMapping;
     }
 
+    /**
+     * @param $value
+     * @return string
+     */
     private function fullPath($value): string
     {
         return  $this->storageURL . $value;

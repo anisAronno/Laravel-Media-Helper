@@ -10,9 +10,8 @@ class MediaHelpers
 {
     private array $fileTypeFolders = [];
     private string $storageDisk;
-    private string $storageURL;
     private $result;
-    private static MediaHelpers $instance;
+    private static $instance;
 
     private function __construct($fileTypeArray = [])
     {
@@ -28,8 +27,8 @@ class MediaHelpers
         ];
 
         $this->fileTypeFolders = array_merge($defaultFileTypeFolders, $fileTypeArray);
-        $this->storageDisk = Storage::getDefaultDriver();
-        $this->storageURL = $this->storageDisk == 'local' ? 'public/' : '';
+        $this->storageDisk = Storage::getDefaultDriver() != 'local' ? Storage::getDefaultDriver() : 'public' ;
+
     }
 
     /**
@@ -48,11 +47,9 @@ class MediaHelpers
      * @param $disk
      * @return $this
      */
-    public function setStorageDisk($disk): static
+    public function setStorageDisk($disk): MediaHelpers
     {
         $this->storageDisk = $disk;
-        $this->storageURL = $this->storageDisk == 'local' ? 'public/' : '';
-
         return $this;
     }
 
@@ -98,7 +95,6 @@ class MediaHelpers
     public function getURL($fullPath): string
     {
         if (!empty($fullPath)) {
-
             $this->result = $this->processImageURL($fullPath);
         } else {
             $this->result = Storage::disk($this->storageDisk)->url($this->getAllDefaultFiles(true, 'placeholder'));
@@ -140,7 +136,7 @@ class MediaHelpers
      * @param $fullPath
      * @return bool|string
      */
-    public function delete($fullPath): bool|string
+    public function delete($fullPath)
     {
         $path = $this->getPathFromValue($fullPath);
 
@@ -150,7 +146,7 @@ class MediaHelpers
 
         try {
             if ($this->existsInStorage($path)) {
-                $this->result = Storage::disk($this->storageDisk)->delete($this->fullPath($path));
+                $this->result = Storage::disk($this->storageDisk)->delete($path);
             }
 
             $this->result = false;
@@ -169,9 +165,9 @@ class MediaHelpers
         $path = $this->getPathFromValue($fullPath);
 
         if ($this->isDefaultFile($fullPath) && $this->existsInStorage($fullPath)) {
-            return Storage::url($fullPath);
+            return Storage::disk($this->storageDisk)->url($fullPath);
         } elseif ($path && $this->existsInStorage($path)) {
-            return Storage::url($path);
+            return Storage::disk($this->storageDisk)->url($path);
         } else {
             return $fullPath;
         }
@@ -185,9 +181,8 @@ class MediaHelpers
      */
     private function storeFile($file, $file_path)
     {
-
         $storageDisk = Storage::disk($this->storageDisk);
-        $storageDisk->put($this->fullPath($file_path), file_get_contents($file));
+        $storageDisk->put($file_path, file_get_contents($file));
 
         return $file_path;
     }
@@ -210,7 +205,7 @@ class MediaHelpers
      */
     private function existsInStorage($path): bool
     {
-        return Storage::disk($this->storageDisk)->exists($this->fullPath($path));
+        return Storage::disk($this->storageDisk)->exists($path);
     }
 
     /**
@@ -252,9 +247,11 @@ class MediaHelpers
 
         $defaultFolderPath = $this->findDefaultsFolderPath();
 
-        $trimPath = stristr($path, $defaultFolderPath);
-
-        return in_array($trimPath, $defaultFiles);
+        return collect($defaultFiles)->some(function ($item) use ($defaultFolderPath) {
+            $parts = explode('/', $item);
+            array_pop($parts);
+            return implode('/', $parts) === $defaultFolderPath;
+        });
     }
 
     /**
@@ -270,7 +267,7 @@ class MediaHelpers
      * @param  string  $defaultFolderName
      * @return mixed
      */
-    private function findDefaultsFolderPath(string $defaultFolderName = 'defaults'): mixed
+    private function findDefaultsFolderPath(string $defaultFolderName = 'defaults')
     {
         $directories = Storage::disk($this->storageDisk)->allDirectories();
         $defaultsFolder = array_filter($directories, fn ($directory) => Str::contains($directory, $defaultFolderName));
@@ -325,15 +322,4 @@ class MediaHelpers
 
         return $fileMapping;
     }
-
-    /**
-     * @param $value
-     * @return string
-     */
-    private function fullPath($value): string
-    {
-        return  $this->storageURL . $value;
-    }
-
-
 }

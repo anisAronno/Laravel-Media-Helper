@@ -5,9 +5,8 @@ namespace AnisAronno\MediaHelper\Facades;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
 
-
 /**
- * @method static void setStorageDisk(string $disk)
+ * @method static this setStorageDisk(string $disk)
  * @method static string getDefaultFiles(bool $includePath = false)
  * @method static string getDefaultLogo()
  * @method static string getDefaultFavIcon()
@@ -15,8 +14,8 @@ use Illuminate\Support\Str;
  * @method static string getDefaultAvatar()
  * @method static string getDefaultPlaceholder()
  * @method static string getURL(string $path)
- * @method static void upload($request, $fieldName, string $upload_dir)
- * @method static void delete($value)
+ * @method static false|mixed|string upload($request, $fieldName, string $upload_dir)
+ * @method static bool|string delete($value)
  *
  * @see \AnisAronno\MediaHelper\MediaHelpers
  */

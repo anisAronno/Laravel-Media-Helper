@@ -36,11 +36,17 @@ class Media extends Facade
         $instance = static::resolveFacadeInstance(static::getFacadeAccessor());
         $files = $instance->getAllDefaultFiles(true);
 
+        if ($method === 'getDefaultFiles') {
+            return array_map(function ($file) use ($instance) {
+                return $instance->getURL($file);
+            }, $files);
+        }
+
         if(Str::startsWith($method, 'getDefault')) {
             $key = strtolower(trim(str_replace('getDefault', '', $method)));
 
             if (array_key_exists($key, $files)) {
-                return $files[$key];
+                return $instance->getURL($files[$key]);
             } else {
                 throw new \BadMethodCallException("Method {$method} does not exist.");
             }

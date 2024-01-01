@@ -120,7 +120,6 @@ class MediaHelpers
                 if (!$this->isAllowedFileType($path)) {
                     return false;
                 }
-                logger($path);
                 $this->result = $this->storeFile($file, $path);
             } else {
                 $this->result = false;

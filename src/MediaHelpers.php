@@ -294,7 +294,7 @@ class MediaHelpers
      * @param $extension
      * @return int|string
      */
-    private function getFileTypeFolder($extension)
+    public function getFileTypeFolder($extension)
     {
         foreach ($this->fileTypeFolders as $folder => $extensions) {
             if (in_array($extension, $extensions)) {

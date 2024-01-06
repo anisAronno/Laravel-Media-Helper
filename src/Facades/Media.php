@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
  * @method static string getURL(string $path)
  * @method static false|mixed|string upload($request, $fieldName, string $upload_dir)
  * @method static bool|string delete($value)
+ * @method static string getFileTypeFolder($extension)
  *
  * @see \AnisAronno\MediaHelper\MediaHelpers
  */
